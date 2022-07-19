@@ -1,4 +1,3 @@
-import Mail from '@ioc:Adonis/Addons/Mail'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import  { schema, rules } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/User'
@@ -14,6 +13,7 @@ export default class AuthController {
                         rules.email(),
                         // rules.unique({ table: 'user', column: 'email'})
                     ]),
+                    username: schema.string(),
                     password: schema.string({},[
                         rules.confirmed()
                     ])
@@ -23,6 +23,7 @@ export default class AuthController {
                     'name.required': 'Name is required',
                     'email.required': 'Email is required',
                     'password.required': 'Password is required',
+                    'username.required': 'Username is required',
                 }
 
                 
@@ -31,19 +32,14 @@ export default class AuthController {
             const user = new User();
             user.name = req.name
             user.email = req.email
+            user.username = req.username
             user.password = req.password
             
             await user.save();
 
-            await Mail.send((message) => {
-                message
-                  .from('mj@twitterclone.com')
-                  .to(user.email)
-                  .subject('Please verify your email')
-                  .htmlView('emails/welcome', { user })
-              })
+            user?.sendVerificationEmail();
 
-            return response.redirect('/')
+            return 'Account created succesfully'
 
     
          } catch(error){

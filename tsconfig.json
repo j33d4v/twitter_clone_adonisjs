@@ -10,6 +10,8 @@
   "compilerOptions": {
     "outDir": "build",
     "rootDir": "./",
+    "target": "esnext",
+    "module": "commonjs",
     "sourceMap": true,
     "paths": {
       "App/*": [
