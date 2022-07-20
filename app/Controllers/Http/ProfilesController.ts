@@ -2,7 +2,6 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 import Application from '@ioc:Adonis/Core/Application'
 
-
 export default class ProfilesController {
 
     public async index({params, response}: HttpContextContract){
@@ -15,7 +14,9 @@ export default class ProfilesController {
                 message: "User not Found"
             });
         }
-
+        await user?.preload('posts')
+        await user?.preload('followings')
+        // const followers = await user.followers()
         return user
     }
 
@@ -29,7 +30,6 @@ export default class ProfilesController {
                 message: "User not Found"
             });
         }
-
         return user
     }
 
@@ -43,12 +43,11 @@ export default class ProfilesController {
                 Application.publicPath('images'), {
                     name: imageName
             })
-            user.avatar = `images/${imageName}`
-
+            user!.avatar = `images/${imageName}`
         }      
                 
-        user.details = request.only(['details']).details;
-        await user.save()
+        user!.details = request.only(['details']).details;
+        await user!.save()
         return 'Avatar uploaded successfully'
 
     }

@@ -1,9 +1,11 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, beforeSave } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, beforeSave, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
 import Hash from '@ioc:Adonis/Core/Hash'
 import Mail from '@ioc:Adonis/Addons/Mail'
 import Route from '@ioc:Adonis/Core/Route'
 import Env from '@ioc:Adonis/Core/Env'
+import Post from './Post'
+import Following from './Following'
 
 
 
@@ -25,7 +27,7 @@ export default class User extends BaseModel {
   public avatar: string
 
   @column()
-  public details: string
+  public details: string  
 
   @column.dateTime()
   public email_verified_at: DateTime
@@ -41,6 +43,17 @@ export default class User extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  @hasMany(()=> Post)
+  public posts: HasMany<typeof Post>
+
+  @hasMany(()=> Following)
+  public followings: HasMany<typeof Following>
+
+  public async followers() {
+    const followersCount = await Following.query().where('following_id', this.id)
+    return followersCount.length
+  }
 
   @beforeSave()
   public static async hashPassword(user: User){

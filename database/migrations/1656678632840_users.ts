@@ -15,7 +15,7 @@ export default class Users extends BaseSchema {
       table.dateTime('DOB')
       table.string('password')
 
-      table.timestamps(true)
+      table.timestamps()
     })
   }
 

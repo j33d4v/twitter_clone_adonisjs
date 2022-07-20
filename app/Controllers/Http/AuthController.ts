@@ -51,7 +51,10 @@ export default class AuthController {
     }
 
     public async login ({request, auth, response}:HttpContextContract){
-        
+        if(auth.isAuthenticated){
+            return 'User is already logged in'
+        }
+
         try {
             const req = await request.validate({
                 schema: schema.create({
@@ -88,6 +91,10 @@ export default class AuthController {
 
     public async logout ({auth} : HttpContextContract){
         
+        if(!auth.isAuthenticated){
+            return 'User not authenticated'
+        }
+
         await auth.logout()
         
         return 'Logged out'
